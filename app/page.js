@@ -16,7 +16,7 @@ export default function Home() {
   const [players, setPlayers] = useState([]);
   const [rounds, setRounds] = useState([]);
   const [answers, setAnswers] = useState([]);
-
+  ¬const [gameRound, setGameRound] = useState(null);
   const [name, setName] = useState("");
   const [roomCode, setRoomCode] = useState("");
   const [me, setMe] = useState(null);
@@ -26,11 +26,29 @@ export default function Home() {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const currentRound = useMemo(() => {
-    if (!room || !rounds.length || room.current_round < 1) return null;
-    return rounds.find((r) => r.round_number === room.current_round);
-  }, [room, rounds]);
+const currentRound = gameRound;
+useEffect(() => {
+  async function loadGameRound() {
+    if (!room || room.current_round < 1) {
+      setGameRound(null);
+      return;
+    }
 
+    const { data, error } = await supabase.rpc("get_game_round", {
+      p_room_id: room.id,
+      p_round_number: room.current_round,
+    });
+
+    if (error) {
+      console.error("ROUND LOAD ERROR:", error);
+      return;
+    }
+
+    setGameRound(data?.[0] || null);
+  }
+
+  loadGameRound();
+}, [room?.id, room?.current_round]);
   const roundAnswers = useMemo(() => {
     if (!room) return [];
     return answers.filter(
