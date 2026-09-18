@@ -391,7 +391,9 @@ setRevealedAnswer("");
         current_round: room.current_round + 1,
       })
       .eq("id", room.id);
-
+await supabase.rpc("start_round_timer", {
+  p_room_id: room.id,
+});
     await refreshGame(room.id);
   }
 
