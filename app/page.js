@@ -23,6 +23,7 @@ export default function Home() {
 
   const [selectedAnswer, setSelectedAnswer] = useState("");
   const [revealed, setRevealed] = useState(false);
+  const [revealedAnswer, setRevealedAnswer] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -360,7 +361,7 @@ async function revealAnswer() {
     setMessage("Waiting for everyone to answer...");
     return;
   }
-
+setRevealedAnswer(correctAnswer);
   setRevealed(true);
   await refreshGame(room.id);
 }
@@ -688,11 +689,7 @@ async function revealAnswer() {
               </div>
 
               <div className="reveal-answer">
-                {currentRound.correct_answer === "REAL"
-                  ? "📸 REAL"
-                  : currentRound.correct_answer === "AI"
-                  ? "🤖 AI"
-                  : `IMAGE ${currentRound.correct_answer}`}
+                {revealedAnswer === "REAL" ? "📸 REAL" : "🤖 AI"}
               </div>
 
               <p>{currentRound.explanation}</p>
