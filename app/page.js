@@ -107,6 +107,16 @@ export default function Home() {
 
       if (playerError) throw playerError;
 
+      // Build a fresh secret 10-round game for this room
+const { error: buildGameError } = await supabase.rpc("build_game", {
+  p_room_id: createdRoom.id,
+});
+
+if (buildGameError) {
+  console.error("BUILD GAME ERROR:", buildGameError);
+  throw new Error("Couldn't generate the game rounds.");
+}
+
       setRoom(createdRoom);
       setMe(player);
       setName("Courtney");
