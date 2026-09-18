@@ -16,7 +16,7 @@ export default function Home() {
   const [players, setPlayers] = useState([]);
   const [rounds, setRounds] = useState([]);
   const [answers, setAnswers] = useState([]);
-  ¬const [gameRound, setGameRound] = useState(null);
+  const [gameRound, setGameRound] = useState(null);
   const [name, setName] = useState("");
   const [roomCode, setRoomCode] = useState("");
   const [me, setMe] = useState(null);
