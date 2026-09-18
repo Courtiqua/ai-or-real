@@ -382,7 +382,7 @@ setRevealedAnswer(correctAnswer);
 
     setSelectedAnswer("");
     setRevealed(false);
-
+setRevealedAnswer("");
     await supabase
       .from("rooms")
       .update({
