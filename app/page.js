@@ -26,8 +26,27 @@ export default function Home() {
   const [revealedAnswer, setRevealedAnswer] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
-
+const [timeLeft, setTimeLeft] = useState(20);
 const currentRound = gameRound;
+
+  useEffect(() => {
+  if (!room || room.current_round < 1 || revealed) return;
+
+  setTimeLeft(20);
+
+  const timer = setInterval(() => {
+    setTimeLeft((prev) => {
+      if (prev <= 1) {
+        clearInterval(timer);
+        return 0;
+      }
+
+      return prev - 1;
+    });
+  }, 1000);
+
+  return () => clearInterval(timer);
+}, [room?.current_round, revealed]);¬
 useEffect(() => {
   async function loadGameRound() {
     if (!room || room.current_round < 1) {
