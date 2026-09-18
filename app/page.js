@@ -44,7 +44,7 @@ useEffect(() => {
       return;
     }
 
-    setGameRound(data?.[0] || null);
+    setGameRound(Array.isArray(data) ? data[0] : data);
   }
 
   loadGameRound();
