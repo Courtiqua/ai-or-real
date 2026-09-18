@@ -306,7 +306,9 @@ if (buildGameError) {
       setMessage(error.message);
       return;
     }
-
+await supabase.rpc("start_round_timer", {
+  p_room_id: room.id,
+});
     await refreshGame(room.id);
     setScreen("game");
   }
@@ -613,39 +615,21 @@ setRevealedAnswer("");
                       ? "chosen"
                       : ""
                   }`}
-                  onClick={() =>
-                    submitAnswer(
-                      currentRound.round_number === 10
-                        ? "A"
-                        : "REAL"
-                    )
-                  }
+onClick={() => submitAnswer("REAL")}
                   disabled={!!myAnswer}
                 >
-                  {currentRound.round_number === 10
-                    ? "IMAGE A"
-                    : "📸 REAL"}
+                {"📸 REAL"}
                 </button>
 
                 <button
-                  className={`ai-button ${
-                    displayAnswer === "AI" ||
-                    displayAnswer === "B"
+{"📸 REAL"}
                       ? "chosen"
                       : ""
                   }`}
-                  onClick={() =>
-                    submitAnswer(
-                      currentRound.round_number === 10
-                        ? "B"
-                        : "AI"
-                    )
-                  }
+           onClick={() => submitAnswer("AI")}
                   disabled={!!myAnswer}
                 >
-                  {currentRound.round_number === 10
-                    ? "IMAGE B"
-                    : "🤖 AI"}
+{"🤖 AI"}
                 </button>
               </div>
             </div>
