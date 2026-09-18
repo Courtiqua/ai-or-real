@@ -292,54 +292,60 @@ if (buildGameError) {
     setScreen("game");
   }
 
-  async function submitAnswer(answer) {
-    if (!room || !me || !currentRound) return;
+async function submitAnswer(answer) {
+  if (!room || !me || !currentRound) return;
 
-    const alreadyAnswered = roundAnswers.some(
-      (a) => a.player_id === me.id
-    );
+  const alreadyAnswered = roundAnswers.some(
+    (a) => a.player_id === me.id
+  );
 
-    if (alreadyAnswered) return;
+  if (alreadyAnswered) return;
 
-    setSelectedAnswer(answer);
+  setSelectedAnswer(answer);
 
-    const isCorrect = answer === currentRound.correct_answer;
+  const { error } = await supabase.from("answers").insert({
+    room_id: room.id,
+    player_id: me.id,
+    round_number: currentRound.round_number,
+    answer,
+    is_correct: false,
+    points_awarded: 0,
+  });
 
-    const { error } = await supabase.from("answers").insert({
-      room_id: room.id,
-      player_id: me.id,
-      round_number: currentRound.round_number,
-      answer,
-      is_correct: isCorrect,
-      points_awarded: isCorrect ? currentRound.points : 0,
-    });
-
-    if (error) {
-      console.error(error);
-      setMessage(error.message);
-      return;
-    }
-
-    await refreshGame(room.id);
+  if (error) {
+    console.error(error);
+    setMessage(error.message);
+    return;
   }
 
-  async function revealAnswer() {
-    if (!everyoneAnswered || !me?.is_host) return;
+  await refreshGame(room.id);
+}
 
-    for (const player of players) {
-      const total = answers
-        .filter((a) => a.player_id === player.id)
-        .reduce((sum, a) => sum + (a.points_awarded || 0), 0);
+async function revealAnswer() {
+  if (!everyoneAnswered || !me?.is_host || !room || !currentRound) return;
 
-      await supabase
-        .from("players")
-        .update({ score: total })
-        .eq("id", player.id);
+  const { data: correctAnswer, error } = await supabase.rpc(
+    "reveal_and_score_round",
+    {
+      p_room_id: room.id,
+      p_round_number: currentRound.round_number,
     }
+  );
 
-    setRevealed(true);
-    await refreshGame(room.id);
+  if (error) {
+    console.error("REVEAL ERROR:", error);
+    setMessage(error.message);
+    return;
   }
+
+  if (!correctAnswer) {
+    setMessage("Waiting for everyone to answer...");
+    return;
+  }
+
+  setRevealed(true);
+  await refreshGame(room.id);
+}
 
   async function nextRound() {
     if (!me?.is_host || !room) return;
